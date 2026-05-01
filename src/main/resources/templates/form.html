@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm nhân viên mới</title>
+</head>
+<body>
+<h2>Thêm nhân viên mới</h2>
+<form th:action="@{/employees/add}" th:object="${employee}" method="post" enctype="multipart/form-data">
+    <label>Tên:</label>
+    <input type="text" th:field="*{name}" required/><br/>
+
+    <label>Tuổi:</label>
+    <input type="number" th:field="*{age}" required/><br/>
+
+    <label>Trạng thái:</label>
+    <input type="text" th:field="*{status}" required/><br/>
+
+    <label>Phòng ban:</label>
+    <select th:field="*{department.id}">
+        <option th:each="dept : ${departments}"
+                th:value="${dept.id}"
+                th:text="${dept.name}"></option>
+    </select><br/>
+
+    <label>Ảnh đại diện:</label>
+    <input type="file" name="file"/><br/><br/>
+
+    <button type="submit">Lưu</button>
+</form>
+</body>
+</html>
