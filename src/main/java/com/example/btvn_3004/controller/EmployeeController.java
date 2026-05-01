@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private final IEmployeeService employeeService;
@@ -32,13 +32,13 @@ public class EmployeeController {
     public String addEmployee(@ModelAttribute("employee") Employee employee,
                               @RequestParam("file") MultipartFile file) {
         employeeService.saveEmployeeWithAvatar(employee, file);
-        return "redirect:/emp-list";
+        return "redirect:/employees";
     }
 
     @GetMapping
     public String listEmployees(Model model) {
         model.addAttribute("employees", employeeService.findAll());
-        return "emp-list";
+        return "employees";
     }
 }
 
