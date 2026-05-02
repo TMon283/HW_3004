@@ -4,6 +4,10 @@ import com.example.btvn_3004.model.Employee;
 import com.example.btvn_3004.repository.EmployeeRepository;
 import com.example.btvn_3004.service.IEmployeeService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +43,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
             employeeRepository.save(employee);
         } catch (IOException e) {
             throw new RuntimeException("Lỗi khi lưu file: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Page<Employee> searchEmployees(String keyword, int page, int size, String sortField, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortField).ascending() :
+                Sort.by(sortField).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (keyword != null && !keyword.isEmpty()) {
+            return employeeRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            return employeeRepository.findAll(pageable);
         }
     }
 }

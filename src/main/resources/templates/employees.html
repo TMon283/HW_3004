@@ -8,17 +8,33 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
 <h2>Danh sách nhân viên</h2>
+
 <a th:href="@{/employees/add}">+ Thêm nhân viên mới</a>
-<table border="1">
+
+<form th:action="@{/employees}" method="get">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên"/>
+    <button type="submit">Tìm kiếm</button>
+</form>
+
+<table>
     <thead>
     <tr>
-        <th>Tên</th>
-        <th>Tuổi</th>
+        <th>
+            <a th:href="@{/employees(page=${currentPage}, sortField='name', sortDir=${reverseSortDir}, keyword=${keyword})}">
+                Tên
+            </a>
+        </th>
+        <th>
+            <a th:href="@{/employees(page=${currentPage}, sortField='age', sortDir=${reverseSortDir}, keyword=${keyword})}">
+                Tuổi
+            </a>
+        </th>
         <th>Phòng ban</th>
         <th>Trạng thái</th>
         <th>Ảnh đại diện</th>
@@ -41,5 +57,28 @@
     </tr>
     </tbody>
 </table>
+
+<div th:if="${employees.size() == 0}">
+    Không tìm thấy nhân viên nào
+</div>
+
+<div>
+    <a th:if="${currentPage > 0}"
+       th:href="@{/employees(page=${currentPage-1}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}">
+        Previous
+    </a>
+
+    <span th:each="i : ${#numbers.sequence(0, totalPages-1)}">
+        <a th:href="@{/employees(page=${i}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}"
+           th:text="${i+1}"
+           th:classappend="${i==currentPage}? 'active'"></a>
+    </span>
+
+    <a th:if="${currentPage < totalPages-1}"
+       th:href="@{/employees(page=${currentPage+1}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}">
+        Next
+    </a>
+</div>
+
 </body>
 </html>

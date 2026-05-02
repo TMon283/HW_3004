@@ -3,6 +3,7 @@ package com.example.btvn_3004.controller;
 import com.example.btvn_3004.model.Employee;
 import com.example.btvn_3004.repository.DepartmentRepository;
 import com.example.btvn_3004.service.IEmployeeService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,30 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeService.findAll());
+    public String listEmployees(Model model,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "5") int size,
+                                @RequestParam(defaultValue = "name") String sortField,
+                                @RequestParam(defaultValue = "asc") String sortDir,
+                                @RequestParam(required = false) String keyword) {
+
+        Page<Employee> employeePage = employeeService.searchEmployees(keyword, page, size, sortField, sortDir);
+
+        if (page < 0) page = 0;
+        if (page >= employeePage.getTotalPages() && employeePage.getTotalPages() > 0) {
+            page = employeePage.getTotalPages() - 1;
+            employeePage = employeeService.searchEmployees(keyword, page, size, sortField, sortDir);
+        }
+
+        model.addAttribute("employees", employeePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", employeePage.getTotalPages());
+        model.addAttribute("totalItems", employeePage.getTotalElements());
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("keyword", keyword);
+
         return "employees";
     }
 }
